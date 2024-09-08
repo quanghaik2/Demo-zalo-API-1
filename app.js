@@ -2,10 +2,14 @@ const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
+
+// Serve static files from the "public" directory (including your HTML verification file)
+app.use(express.static(path.join(__dirname, 'public')));
 
 let codeVerifier = ''; // Để lưu code_verifier
 
