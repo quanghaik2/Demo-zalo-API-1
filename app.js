@@ -26,6 +26,11 @@ const generateCodeVerifier = () => {
   return crypto.randomBytes(32).toString('base64url');
 };
 
+// Hàm tạo state ngẫu nhiên
+const generateRandomState = () => {
+  return crypto.randomBytes(16).toString('hex');
+};
+
 // Đường dẫn chuyển hướng đến trang đăng nhập Zalo
 app.get('/login', (req, res) => {
   const appId = process.env.APP_ID;
@@ -35,7 +40,7 @@ app.get('/login', (req, res) => {
   codeVerifier = generateCodeVerifier();
   const codeChallenge = generateCodeChallenge(codeVerifier);
   
-  const state = 'random_state_string'; // Bạn có thể tạo giá trị random cho tính bảo mật
+  const state = generateRandomState(); // Tạo state ngẫu nhiên
   
   const loginUrl = `https://oauth.zaloapp.com/v4/permission?app_id=${appId}&redirect_uri=${redirectUri}&code_challenge=${codeChallenge}&state=${state}`;
   
