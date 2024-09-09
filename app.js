@@ -56,7 +56,7 @@ app.get('/callback', async (req, res) => {
   }
 
   try {
-    // Đổi mã 'code' thành 'access token' bằng cách gửi yêu cầu với code_verifier
+    // Đổi mã 'code' thành 'access token'
     const tokenResponse = await axios.post('https://oauth.zaloapp.com/v4/access_token', null, {
       params: {
         app_id: process.env.APP_ID,
@@ -66,9 +66,15 @@ app.get('/callback', async (req, res) => {
         redirect_uri: process.env.REDIRECT_URI
       }
     });
-
+    
+    // Kiểm tra tokenResponse
+    console.log('Token Response:', tokenResponse.data);
+  
     const accessToken = tokenResponse.data.access_token;
-
+    if (!accessToken) {
+      return res.status(400).json({ message: 'Invalid access token' });
+    }
+    
     // Lấy thông tin người dùng
     const userResponse = await axios.get('https://graph.zalo.me/v2.0/me', {
       params: {
@@ -76,14 +82,15 @@ app.get('/callback', async (req, res) => {
         fields: 'id,name,picture'
       }
     });
-
+    
     const user = userResponse.data;
     res.json({ message: 'Login successful', user });
-
+  
   } catch (error) {
-    console.error(error);
+    console.error('Error:', error.response ? error.response.data : error.message);
     res.status(500).json({ message: 'Internal Server Error' });
   }
+  
 });
 
 const PORT = process.env.PORT || 3000;
